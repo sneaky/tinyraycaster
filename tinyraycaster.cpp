@@ -66,6 +66,9 @@ int main() {
 			       "0002222222200000";
 
 	assert(sizeof(map) == map_w * map_h + 1);
+	
+	float player_x = 3.456;
+	float player_y = 2.345;
 
 	for (size_t j = 0; j < win_h; j++) {
 		for (size_t i = 0; i < win_w; i++) {
@@ -103,6 +106,7 @@ int main() {
 		}
 	}
 
+	draw_rect(framebuffer, win_w, win_h, player_x * rect_w, player_y * rect_h, 5, 5, pack_color(255, 255, 255));
 	drop_ppm_image("./out.ppm", framebuffer, win_w, win_h);
 
 	return 0;

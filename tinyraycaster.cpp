@@ -43,9 +43,9 @@ void draw_rect(vector<uint32_t> &img, const size_t img_w, const size_t img_h, co
 }
 
 int main() {
-	const size_t win_w = 512;
+	const size_t win_w = 1024;
 	const size_t win_h = 512;
-	vector<uint32_t> framebuffer(win_w * win_h, 255);
+	vector<uint32_t> framebuffer(win_w * win_h, pack_color(255, 255, 255));
 	
 	const size_t map_w = 16;
 	const size_t map_h = 16;
@@ -72,7 +72,7 @@ int main() {
 	float player_y = 2.345;
 	float player_a = 1.523;
 	const float fov = M_PI/3;
-
+	/*
 	for (size_t j = 0; j < win_h; j++) {
 		for (size_t i = 0; i < win_w; i++) {
 			uint8_t r = 255 * j / float(win_h);
@@ -81,8 +81,9 @@ int main() {
 			framebuffer[i + j * win_w] = pack_color(r, g, b);
 		}
 	}
-
-	const size_t rect_w = win_w / map_w;
+	*/
+	
+	const size_t rect_w = win_w / (map_w * 2);
 	const size_t rect_h = win_h / map_h;
 	for (size_t j = 0; j < map_w; j++) {
 		for (size_t i = 0; i < map_w; i++) {
@@ -109,18 +110,24 @@ int main() {
 		}
 	}
 
-	draw_rect(framebuffer, win_w, win_h, player_x * rect_w, player_y * rect_h, 5, 5, pack_color(255, 255, 255));
-
-	for (size_t i = 0; i < win_w; i++) {
-		float angle = player_a - fov/2 + fov * i / static_cast<float>(win_w);
+	//draw_rect(framebuffer, win_w, win_h, player_x * rect_w, player_y * rect_h, 5, 5, pack_color(255, 255, 255));
+	
+	for (size_t i = 0; i < win_w / 2; i++) {
+		float angle = player_a - fov/2 + fov * i / static_cast<float>(win_w / 2);
 		for (float t = 0; t < 20; t += .05) {
 			float cx = player_x + t*cos(angle);
 			float cy = player_y + t*sin(angle);
-			if (map[static_cast<int>(cx) + static_cast<int>(cy) * map_w] != ' ') break;
+			//if (map[static_cast<int>(cx) + static_cast<int>(cy) * map_w] != ' ') break;
 
 			size_t pix_x = cx * rect_w;
 			size_t pix_y = cy * rect_h;
-			framebuffer[pix_x + pix_y * win_w] = pack_color(255, 255, 255);
+			framebuffer[pix_x + pix_y * win_w] = pack_color(160, 160, 160);
+
+			if (map[static_cast<int>(cx) + static_cast<int>(cy) * map_w] != ' ') {
+				size_t column_height = win_h / t;
+				draw_rect(framebuffer, win_w, win_h, win_w / 2 + i, win_h / 2 - column_height / 2, 1, column_height, pack_color(0, 255, 255));
+				break;
+			}
 	}
 
 	}

@@ -4,7 +4,7 @@ OBJDIR = obj
 SRC = $(wildcard *.cpp)
 HDR = $(wildcard *.h)
 LIBS = -Wall --std=c++11
-OUT = out.ppm
+OUT = *.ppm
 
 $(EXE): $(SRC)
 	$(CC) $(SRC) -o $(EXE) $(LIBS)

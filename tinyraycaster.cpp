@@ -143,7 +143,7 @@ int main() {
 				if (map[static_cast<int>(cx) + static_cast<int>(cy) * map_w] != ' ') {
 					size_t icolor = map[static_cast<int>(cx) + static_cast<int>(cy) * map_w] - '0';
 					assert(icolor < ncolors);
-					size_t column_height = win_h / t;
+					size_t column_height = win_h / (t * cos(angle - player_a));
 					draw_rect(framebuffer, win_w, win_h, win_w / 2 + i, win_h / 2 - column_height / 2, 1, column_height, pack_color(0, 255, 255));
 					break;
 				}

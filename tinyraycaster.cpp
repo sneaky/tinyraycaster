@@ -31,24 +31,32 @@ int wall_x_texture_coord(const float hitx, const float hity, Texture &texture_wa
 	return texture;
 }
 
-/*
-int wall_x_texture_coord(const float x, const float y, Texture& texture_walls) {
-	float hitx = x - floor(x + 0.05); // hitx and hity contain (signed) fractional parts of x and y,
-	float hity = y - floor(y + 0.05); // they vary between -0.5 and +0.5, and one of them is supposed to be very close to 0
-	int texture = hitx * texture_walls.size;
+void draw_sprite(Sprite& sprite, FrameBuffer& fb, Player& player, Texture& texture_sprites) {
+	// absolute direction from the player to the sprite (in radians)
+	float sprite_dir = atan2(sprite.y - player.y, sprite.x - player.x);
 	
-	if (std::abs(hity) > std::abs(hitx)) { // determine whether we hit a "vertical" or "horizontal" wall
-		texture = hity * texture_walls.size;
+	while (sprite_dir - player.a > M_PI) {
+		sprite_dir -= 2 * M_PI;
+	}
+	
+	while (sprite_dir - player.a < -M_PI) {
+		sprite_dir += 2*M_PI;
 	}
 
-	if (texture < 0) { // handle case where x_texture_coord is negative
-		texture += texture_walls.size;
-	}
-	assert(texture >= 0 && texture < static_cast<int>(texture_walls.size));
+	float sprite_dist = std::sqrt(pow(player.x - sprite.x, 2) + pow(player.y - sprite.y, 2)); // distance from the player to the sprite
+	size_t sprite_screen_size = std::min(1000, static_cast<int>(fb.h/sprite_dist)); // screen sprite size
+	int h_offset = (sprite_dir - player.a)/player.fov*(fb.w/2) + (fb.w/2)/2 - texture_sprites.size/2; // do not forget the 3D view takes only a half of the framebuffer
+	int v_offset = fb.h/2 - sprite_screen_size/2;
 
-	return texture;
+	for (size_t i=0; i<sprite_screen_size; i++) {
+		if (h_offset+i<0 || h_offset+i>=fb.w/2) continue;
+		for (size_t j=0; j<sprite_screen_size; j++) {
+		    if (v_offset+j<0 || v_offset+j>=fb.h) continue;
+		    fb.set_pixel(fb.w/2 + h_offset+i, v_offset+j, pack_color(0,0,0));
+		}
+	}
+
 }
-*/
 
 void map_show_sprite(Sprite& sprite, FrameBuffer &fb, Map& map) {
 	const size_t rect_w = fb.w / (map.w * 2);
@@ -101,6 +109,7 @@ void render(FrameBuffer& fb, Map& map, Player& player, std::vector<Sprite> &spri
 
 	for (size_t i = 0; i < sprites.size(); i++) {
 		map_show_sprite(sprites[i], fb, map);
+		draw_sprite(sprites[i], fb, player, texture_monster);
 	}
 }
 
